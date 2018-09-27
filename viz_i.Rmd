@@ -61,6 +61,7 @@ ggplot(weather_df, aes(x = tmin, y = tmax))+
   geom_point()
 ```
 
+Scatterplot for a part of the data
 
 ```{r}
 weather_df %>% 
@@ -68,6 +69,8 @@ weather_df %>%
   ggplot(aes(x = tmin, y = tmax)) +
   geom_point()
 ```
+
+Name the scatterplot
 
 ```{r}
 weather_sp =
@@ -83,7 +86,7 @@ ggplot(weather_df, aes(x = tmin, y = tmax)) +
   geom_point(aes(color = name))
 ```
 
-Add a geom
+Add a geom_smooth
 
 ```{r}
 ggplot(weather_df, aes(x = tmin, y = tmax)) +
@@ -91,7 +94,7 @@ ggplot(weather_df, aes(x = tmin, y = tmax)) +
   geom_smooth()
 ```
 
-Add a geom
+Add a geom_smooth which there is no confidence interval around smooth
 
 ```{r}
 ggplot(weather_df, aes(x = tmin, y = tmax)) +
@@ -99,7 +102,7 @@ ggplot(weather_df, aes(x = tmin, y = tmax)) +
   geom_smooth(se = FALSE)
 ```
 
-Add a geom
+Add a geom with alpha = 0.4
 
 ```{r}
 ggplot(weather_df, aes(x = tmin, y = tmax)) +
@@ -107,7 +110,7 @@ ggplot(weather_df, aes(x = tmin, y = tmax)) +
   geom_smooth(se = FALSE)
 ```
 
-Add a geom
+Add a geom with point and smooth colored by name
 
 ```{r}
 ggplot(weather_df, aes(x = tmin, y = tmax, color = name)) +
@@ -115,8 +118,14 @@ ggplot(weather_df, aes(x = tmin, y = tmax, color = name)) +
   geom_smooth(se = FALSE)
 ```
 
+can also colored by prcp
 
-Facetting....
+```{r}
+ggplot(weather_df, aes(x = tmin, y = tmax, color = prcp)) +
+  geom_point(alpha = 0.4) 
+```
+
+Facetting with name
 
 ```{r}
 ggplot(weather_df, aes(x = tmin, y = tmax, color = name)) +
@@ -125,12 +134,11 @@ ggplot(weather_df, aes(x = tmin, y = tmax, color = name)) +
   facet_grid( ~ name)
 ```
 
-```{r}
-ggplot(weather_df, aes(x = tmin, y = tmax, color = prcp)) +
-  geom_point(alpha = 0.4) 
-```
+
 
 A more interesting plot
+
+change the x and y aes
 
 ```{r}
 ggplot(weather_df, aes(x = date, y = tmax, color = name)) +
@@ -142,10 +150,14 @@ ggplot(weather_df, aes(x = date, y = tmax, color = name)) +
   geom_line()
 ```
 
+add "size" 
+
 ```{r}
 ggplot(weather_df, aes(x = date, y = tmax, color = name, size = prcp)) +
   geom_point()
 ```
+
+altogether
 
 ```{r}
 ggplot(weather_df, aes(x = date, y = tmax, color = name, size = prcp)) +
@@ -154,10 +166,12 @@ ggplot(weather_df, aes(x = date, y = tmax, color = name, size = prcp)) +
   facet_grid( ~ name)
 ```
 
+keep in mind of the differences between these two:
+
 
 ```{r}
-ggplot(weather_df) + geom_point(aes(x = tmax, y = tmin), color = "blue")
-ggplot(weather_df) + geom_point(aes(x = tmax, y = tmin, color = "blue"))
+ggplot(weather_df) + geom_point(aes(x = tmax, y = tmin), color = "blue")  # true
+ggplot(weather_df) + geom_point(aes(x = tmax, y = tmin, color = "blue"))  # flase
 ```
 
 ## Univariate plots
@@ -201,6 +215,8 @@ Violin plot!
 ggplot(weather_df, aes(x = name, y = tmax)) +
   geom_violin()
 ```
+
+density ridges!
 
 ```{r}
 ggplot(weather_df, aes(x = tmax, y = name)) +
