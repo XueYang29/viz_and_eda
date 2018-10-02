@@ -2,7 +2,7 @@
 title: "Visualization Pt 1"
 author: "Xue Yang"
 date: "9/27/2018"
-output: html_document
+output: github_document
 ---
 
 ```{r setup, include=FALSE}
@@ -234,5 +234,40 @@ weather_plot = ggplot(weather_df, aes(x = tmin, y = tmax)) +
 
 ggsave("weather_plot.pdf", weather_plot, width = 8, height = 5)
 
+```
+
+
+## Last example
+
+Make a bunch if plots!
+
+```{r}
+ggplot(weather_df, aes(y = prcp, x = name))+
+  geom_boxplot()
+```
+
+```{r}
+ggplot(weather_df, aes(y = prcp, x = name))+
+  geom_violin()
+```
+
+```{r}
+ggplot(weather_df, aes(x = prcp, fill = name))+
+  geom_density(alpha = .5)
+```
+
+```{r}
+weather_df %>% 
+  filter(prcp <100) %>% 
+  ggplot(aes(x = prcp, fill = name))+
+  geom_density(alpha = .5)
+```
+
+
+```{r}
+weather_df %>% 
+  filter(prcp > 0) %>% 
+  ggplot(aes(x = prcp, fill = name))+
+  geom_density(alpha = .5)
 ```
 
