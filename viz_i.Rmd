@@ -239,24 +239,34 @@ ggsave("weather_plot.pdf", weather_plot, width = 8, height = 5)
 
 ## Last example
 
-Make a bunch if plots!
+Make plots that compare precipitation across locations: 
+
+Open question! need to make a lot of plots
+
+Try a histogram, a density plot, a boxplot, a violin plot, and a ridgeplot; use aesthetic mappings to make your figure readable.
+
+Make a bunch of plots!
 
 ```{r}
+# not as good, since long tail
 ggplot(weather_df, aes(y = prcp, x = name))+
   geom_boxplot()
 ```
 
 ```{r}
+# even wrose
 ggplot(weather_df, aes(y = prcp, x = name))+
   geom_violin()
 ```
 
 ```{r}
+# not usful
 ggplot(weather_df, aes(x = prcp, fill = name))+
   geom_density(alpha = .5)
 ```
 
 ```{r}
+# still skewd
 weather_df %>% 
   filter(prcp <100) %>% 
   ggplot(aes(x = prcp, fill = name))+
@@ -265,6 +275,7 @@ weather_df %>%
 
 
 ```{r}
+# 
 weather_df %>% 
   filter(prcp > 0) %>% 
   ggplot(aes(x = prcp, fill = name))+

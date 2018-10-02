@@ -15,14 +15,14 @@ knitr::opts_chunk$set(
 library(tidyverse)
 ```
 
-    ## -- Attaching packages ---------------------------------------------------- tidyverse 1.2.1 --
+    ## -- Attaching packages ------------------------------------ tidyverse 1.2.1 --
 
     ## <U+221A> ggplot2 3.0.0     <U+221A> purrr   0.2.5
     ## <U+221A> tibble  1.4.2     <U+221A> dplyr   0.7.6
     ## <U+221A> tidyr   0.8.1     <U+221A> stringr 1.3.1
     ## <U+221A> readr   1.1.1     <U+221A> forcats 0.3.0
 
-    ## -- Conflicts ------------------------------------------------------- tidyverse_conflicts() --
+    ## -- Conflicts --------------------------------------- tidyverse_conflicts() --
     ## x dplyr::filter() masks stats::filter()
     ## x dplyr::lag()    masks stats::lag()
 
@@ -393,9 +393,16 @@ ggsave("weather_plot.pdf", weather_plot, width = 8, height = 5)
 Last example
 ------------
 
-Make a bunch if plots!
+Make plots that compare precipitation across locations:
+
+Open question! need to make a lot of plots
+
+Try a histogram, a density plot, a boxplot, a violin plot, and a ridgeplot; use aesthetic mappings to make your figure readable.
+
+Make a bunch of plots!
 
 ``` r
+# not as good, since long tail
 ggplot(weather_df, aes(y = prcp, x = name))+
   geom_boxplot()
 ```
@@ -405,6 +412,7 @@ ggplot(weather_df, aes(y = prcp, x = name))+
 <img src="viz_i_files/figure-markdown_github/unnamed-chunk-28-1.png" width="90%" />
 
 ``` r
+# even wrose
 ggplot(weather_df, aes(y = prcp, x = name))+
   geom_violin()
 ```
@@ -414,6 +422,7 @@ ggplot(weather_df, aes(y = prcp, x = name))+
 <img src="viz_i_files/figure-markdown_github/unnamed-chunk-29-1.png" width="90%" />
 
 ``` r
+# not usful
 ggplot(weather_df, aes(x = prcp, fill = name))+
   geom_density(alpha = .5)
 ```
@@ -423,6 +432,7 @@ ggplot(weather_df, aes(x = prcp, fill = name))+
 <img src="viz_i_files/figure-markdown_github/unnamed-chunk-30-1.png" width="90%" />
 
 ``` r
+# still skewd
 weather_df %>% 
   filter(prcp <100) %>% 
   ggplot(aes(x = prcp, fill = name))+
@@ -432,6 +442,7 @@ weather_df %>%
 <img src="viz_i_files/figure-markdown_github/unnamed-chunk-31-1.png" width="90%" />
 
 ``` r
+# 
 weather_df %>% 
   filter(prcp > 0) %>% 
   ggplot(aes(x = prcp, fill = name))+
