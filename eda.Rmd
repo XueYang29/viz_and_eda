@@ -1,0 +1,277 @@
+---
+title: "EDA"
+author: "Xue Yang"
+date: "10/04/2018"
+output: github_document
+---
+
+
+```{r setup}
+library(tidyverse)
+
+knitr::opts_chunk$set(
+  fig.width = 6,
+  fig.asp = .6,
+  out.width = "90%"
+)
+
+theme_set(theme_bw() + theme(legend.position = "bottom"))
+```
+
+
+
+```{r data_import, cache = TRUE}
+library(rnoaa)
+
+weather_df = 
+  rnoaa::meteo_pull_monitors(c("USW00094728", "USC00519397", "USS0023B17S"),
+                      var = c("PRCP", "TMIN", "TMAX"), 
+                      date_min = "2016-01-01",
+                      date_max = "2016-12-31") %>%
+  mutate(
+    name = recode(id, USW00094728 = "CentralPark_NY", 
+                      USC00519397 = "Waikiki_HA",
+                      USS0023B17S = "Waterhole_WA"),
+    tmin = tmin / 10,
+    tmax = tmax / 10,
+    month = lubridate::floor_date(date, unit = "month")) %>%
+  select(name, id, date, month, everything())
+weather_df
+```
+
+
+## Start grouping
+
+```{r}
+weather_df %>% 
+  group_by(name)
+```
+
+```{r}
+weather_df %>% 
+  group_by(month)
+```
+
+```{r}
+weather_df %>% 
+  group_by(name, month)
+```
+
+```{r}
+weather_df %>% 
+  group_by(name, month) %>% 
+  ungroup() # nothing will change
+```
+
+Count frist ...
+
+```{r}
+weather_df %>% 
+  group_by(name, month) %>% 
+  summarize(number = n()) # summary how many elements are in the group
+```
+
+```{r}
+weather_df %>% 
+  group_by(name) %>% 
+  summarize(number = n()) 
+```
+
+```{r}
+weather_df %>% 
+  group_by(month) %>% 
+  summarize(number = n())
+```
+
+```{r}
+weather_df %>% 
+  count(month) # count do the same thing as (group_by + summarize)
+```
+
+```{r}
+weather_df %>% 
+  count(name, month)
+```
+
+
+
+## Grouped summaries
+
+```{r}
+weather_df %>% 
+  group_by(name, month) %>% 
+  summarize(number = n(),
+            mean_tmax = mean(tmax)) 
+```
+
+```{r}
+weather_df %>% 
+  group_by(name, month) %>% 
+  summarize(number = n(),
+            name_na = sum(is.na(tmax)), # show the number of missing value
+            mean_tmax = mean(tmax))
+```
+
+```{r}
+# ?mean
+weather_df %>% 
+  group_by(name, month) %>% 
+  summarize(number = n(),
+            mean_tmax = mean(tmax, na.rm = TRUE)) # no NA will be calculate
+
+```
+
+```{r}
+weather_df %>% 
+  group_by(name, month) %>% 
+  summarize(number = n(),
+            mean_tmax = mean(tmax, na.rm = TRUE),
+            median_prcp = median(prcp, na.rm = TRUE)
+  )
+
+```
+
+```{r}
+weather_df %>% 
+  group_by(name, month) %>% 
+  summarize(number = n(),
+            mean_tmax = mean(tmax, na.rm = TRUE),
+            median_prcp = median(prcp, na.rm = TRUE),
+            sd_tmin = sd(tmin, na.rm = TRUE)
+        
+  )
+
+```
+
+## compare with mutate a new variable and summarize something
+
+```{r}
+weather_df %>% 
+  group_by(name) %>% 
+  mutate(mean_tmax = mean(tmax, na.rm = TRUE)) # repeat in the group (but of courese calculate by group)
+```
+
+```{r}
+weather_df %>% 
+  group_by(name) %>% 
+  summarize(mean_tmax = mean(tmax, na.rm = TRUE)) # only show one time
+```
+
+This is still a tibble!
+
+```{r}
+weather_df %>% 
+  group_by(name, month) %>% 
+  summarize(number = n(),
+            mean_tmax = mean(tmax, na.rm = TRUE),
+            median_prcp = median(prcp, na.rm = TRUE),
+            sd_tmin = sd(tmin, na.rm = TRUE)) %>% 
+  ggplot(aes(x = month, y = mean_tmax, color = name)) +
+  geom_point()
+# get monthly mean tmax from CentralPark, Waikiki and Waterhole
+```
+
+```{r}
+month_df = 
+  weather_df %>% 
+  group_by(name, month) %>% 
+  summarize(number = n(),
+            mean_tmax = mean(tmax, na.rm = TRUE),
+            median_prcp = median(prcp, na.rm = TRUE),
+            sd_tmin = sd(tmin, na.rm = TRUE)) 
+
+# deal with mutiple data: show both the original data and the summarize data
+ggplot(weather_df, aes(x = date, y = tmax, color = name)) +
+  # all the points of the original data in the background
+  geom_point(alpha = .5) + 
+  # adding on the top that data coming only from the month_df with the line
+  geom_line(data = month_df, aes(x = month, y = mean_tmax))
+```
+
+Tidy is not always best for human ...
+
+```{r}
+weather_df %>% 
+  group_by(name, month) %>% 
+  summarize(mean_tmax = mean(tmax, na.rm = TRUE)) %>% # a tidy data although easy to make a plot, not super readbale for some human
+  spread(key = name, value = mean_tmax) %>% # declare tidy to untidy to make it readbale for other people 
+  knitr::kable(digits = 3)
+```
+
+
+```{r}
+weather_df %>% 
+  group_by(name, month) %>% 
+  summarize(mean_tmax = mean(tmax, na.rm = TRUE)) %>% 
+  spread(key = month, value = mean_tmax) %>% 
+  knitr::kable(digits = 3)
+```
+
+
+## Grouped mutate
+
+```{r}
+weather_df %>% 
+  group_by(name, month) %>% 
+  mutate(mean_tmax = mean(tmax, na.rm = TRUE)) # repeat in the group
+```
+
+More interesting example ...
+
+```{r}
+weather_df %>% 
+  group_by(name) %>% 
+  mutate(mean_tmax = mean(tmax, na.rm = TRUE),
+         centered_tmax = tmax - mean_tmax) %>%  # sometimes repeat may be useful 
+  ggplot(aes(x = date, y =centered_tmax, color = name)) +
+  geom_point()
+```
+
+
+## Window functions
+
+Use ranks
+
+```{r}
+# ?rank, ? min_rank
+weather_df %>% 
+  group_by(name, month) %>% 
+  mutate(tmax_rank = min_rank(tmax)) %>%  # coldest days
+  filter(tmax_rank < 2) 
+```
+
+```{r}
+weather_df %>% 
+  group_by(name, month) %>% 
+  mutate(tmax_rank = min_rank(desc(tmax))) %>%   # warmest days
+  filter(tmax_rank < 2) 
+```
+
+Use lag to get the previous observations
+
+```{r}
+# ?lag
+```
+
+```{r}
+weather_df %>% 
+  group_by(name) %>% 
+  mutate(lag_tmax = lag(tmax))   # the very first data will be NA, be careful if the data is not ordered
+```
+
+## How neat is this??
+
+```{r}
+weather_df %>% 
+  group_by(name) %>% 
+  mutate(lag_tmax = lag(tmax),
+         one_day_change = tmax - lag_tmax) %>% # how much did the temperture change from one day to another in CentralPark, Waikiki and Waterhole
+  summarize(sd_one_day_change = sd(one_day_change, na.rm = TRUE))
+```
+
+```{r}
+weather_df %>% 
+  group_by(name) %>% 
+  mutate(one_day_change = tmax - lag(tmax)) %>%
+  summarize(sd_one_day_change = sd(one_day_change, na.rm = TRUE))
+```
